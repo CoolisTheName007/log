@@ -8,7 +8,7 @@
 -- @module log
 --
 
-local pack=require 'utils.table'.pack -- needed for pack. To be removed when we switch to Lua5.2
+local pack=require'utils.table'.pack -- needed for pack. To be removed when we switch to Lua5.2
 local check = require'packages.checker'.check
 local pcall = pcall
 local string = string
@@ -20,6 +20,8 @@ local base = _G
 local pairs = pairs
 local select = select
 local next = next
+
+local print=print
 local pprint=pprint --TBR
 local math=math
 --no more global access
@@ -167,7 +169,6 @@ end
 function trace(module, severity, fmt, ...)
     check('string,string,string',module, severity, fmt)
     if not musttrace(module, severity) then return end
-	
     local c, s = pcall(string.format, fmt, ...)
     if c then
         local t
@@ -181,7 +182,7 @@ function trace(module, severity, fmt, ...)
         local out = (format or "%t %m-%s: %l"):gsub("%%(%a)", sub)
         loggers(module, severity, out)
     else -- fallback printing when the formating failed. The fallback printing allow to safely print what was given to the log function, without crashing the thread !
-        local args = {}
+		local args = {}
         local t = pack(...)
         for k = 1, t.n do table.insert(args, tostring(k)..":["..tostring(t[k]).."]") end
         --trace(module, severity, "\targs=("..table.concat(args, " ")..")" )
